@@ -12,7 +12,7 @@ cartRoutes.get("/cart-items",async (req, res) => {
         const product = String(req.query.product || "");
         const maxPrice = parseInt(req.query.price as string);
         //const test = 1000;
-        //const pageSize = parseInt(req.query.quantity as string);
+        const pageSize = parseInt(req.query.quantity as string);
         if(product){
             const results = await client.db().collection<Cart>('cartItems').find({product: product}).toArray();
             console.log(results);
@@ -21,8 +21,12 @@ cartRoutes.get("/cart-items",async (req, res) => {
             const results = await client.db().collection<Cart>('cartItems').find({price: {$gte: maxPrice}}).toArray();
             console.log(results);
             res.json(results);
-        } else{
-            const results = await client.db().collection<Cart>('cartItems').find({}).toArray(); 
+        } else if(pageSize){
+            const results = await client.db().collection<Cart>('cartItems').find().limit(pageSize).toArray();
+            console.log(results);
+            res.json(results);
+        }else{
+            const results = await client.db().collection<Cart>('cartItems').find().toArray(); 
             console.log(results);
             res.json(results);
         }
